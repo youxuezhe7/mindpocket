@@ -28,6 +28,7 @@ export interface LoadedChangelogPage {
 
 const FRONTMATTER_REGEX = /^---\n([\s\S]*?)\n---\n?([\s\S]*)$/
 const ARRAY_VALUE_REGEX = /^\[(.*)\]$/
+const MDX_EXTENSION_REGEX = /\.mdx$/
 
 function parseFrontmatter(frontmatter: string): FrontmatterData {
   const lines = frontmatter.split("\n")
@@ -103,7 +104,7 @@ export async function loadChangelogPages(): Promise<LoadedChangelogPage[]> {
       const parsed = parseMDX(content)
 
       return {
-        id: file.replace(/\.mdx$/, ""),
+        id: file.replace(MDX_EXTENSION_REGEX, ""),
         data: {
           title: parsed.frontmatter.title ?? "",
           description: parsed.frontmatter.description ?? "",

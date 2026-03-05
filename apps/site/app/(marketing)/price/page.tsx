@@ -1,5 +1,5 @@
-import { SiteHeader } from "@/components/site-header"
 import Pricing from "@/components/pricing"
+import { SiteHeader } from "@/components/site-header"
 
 export default function PricePage() {
   return (

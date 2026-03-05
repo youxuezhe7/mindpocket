@@ -245,7 +245,7 @@ const dictionaries = {
   },
 } as const
 
-type SiteI18nContextValue = {
+interface SiteI18nContextValue {
   locale: SiteLocale
   setLocale: (locale: SiteLocale) => void
   t: (typeof dictionaries)[SiteLocale]

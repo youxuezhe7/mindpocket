@@ -1,5 +1,5 @@
+import ChangelogView, { type ChangelogPage as ChangelogPageData } from "@/components/changelog-view"
 import { SiteHeader } from "@/components/site-header"
-import ChangelogView, { type ChangelogPage } from "@/components/changelog-view"
 import { loadChangelogPages } from "@/lib/changelog-loader"
 
 export default async function ChangelogPage() {
@@ -18,7 +18,7 @@ export default async function ChangelogPage() {
         </div>
 
         <div className="mx-auto max-w-5xl px-6 pt-10 lg:px-10">
-          <ChangelogView changelogPages={changelogPages as ChangelogPage[]} />
+          <ChangelogView changelogPages={changelogPages as ChangelogPageData[]} />
         </div>
       </div>
     </>
