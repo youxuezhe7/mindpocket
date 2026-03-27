@@ -1,5 +1,5 @@
 # Plan
 
-- Rename apps/extension package from wxt-react-starter to extension
-- Verify no other references need updates
+- Refresh the testimonials section into a dual marquee review wall
+- Preserve existing feedback copy with tighter card styling
 - Run format and code quality checks

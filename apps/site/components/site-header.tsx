@@ -17,7 +17,6 @@ export const SiteHeader = () => {
     { name: t.nav.docs, href: "/docs" },
     { name: t.nav.solutions, href: "/price" },
     { name: t.nav.changelog, href: "/changelog" },
-    { name: t.nav.platform, href: "#link" },
     { name: t.nav.roadmap, href: "#link" },
   ]
 
