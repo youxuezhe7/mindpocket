@@ -117,13 +117,13 @@ export function BookmarkCard({ item }: { item: BookmarkItem }) {
         href={`/bookmark/${item.id}`}
       >
         {/* 封面图 */}
-        <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted">
+        <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
           {item.coverImage ? (
             <NextImage
               alt={item.title}
               className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
               fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
               src={item.coverImage}
             />
           ) : (
@@ -133,21 +133,21 @@ export function BookmarkCard({ item }: { item: BookmarkItem }) {
                 gradient
               )}
             >
-              <TypeIcon className="size-8 text-muted-foreground/50" />
+              <TypeIcon className="size-6 text-muted-foreground/50" />
             </div>
           )}
 
           {/* 悬浮操作按钮 */}
-          <div className="absolute top-2 right-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+          <div className="absolute top-1.5 right-1.5 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  className="size-7 bg-background/80 backdrop-blur-sm"
+                  className="size-6 bg-background/80 backdrop-blur-sm"
                   onClick={(e) => e.preventDefault()}
                   size="icon"
                   variant="ghost"
                 >
-                  <MoreHorizontal className="size-3.5" />
+                  <MoreHorizontal className="size-3" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" onClick={(e) => e.preventDefault()}>
@@ -171,21 +171,14 @@ export function BookmarkCard({ item }: { item: BookmarkItem }) {
         </div>
 
         {/* 内容区域 */}
-        <div className="flex flex-1 flex-col gap-2 p-3">
+        <div className="flex flex-1 flex-col gap-1.5 p-2.5">
           {/* 标题 */}
           <h3 className="line-clamp-2 font-medium text-sm leading-snug">{item.title}</h3>
 
-          {/* 描述 */}
-          {item.description && (
-            <p className="line-clamp-2 text-muted-foreground text-xs leading-relaxed">
-              {item.description}
-            </p>
-          )}
-
           {/* 底部元信息 */}
-          <div className="mt-auto flex items-center gap-2 pt-1 text-muted-foreground text-xs">
+          <div className="mt-auto flex items-center gap-1.5 text-muted-foreground text-xs">
             {displayFolderName && (
-              <span className="flex items-center gap-1 truncate">
+              <span className="flex items-center gap-0.5 truncate">
                 <span>{displayFolderEmoji || "📁"}</span>
                 <span className="truncate">{displayFolderName}</span>
               </span>
@@ -195,17 +188,14 @@ export function BookmarkCard({ item }: { item: BookmarkItem }) {
               <PlatformIcon platform={item.platform!} />
             ) : (
               domain && (
-                <span className="flex items-center gap-1 truncate">
+                <span className="flex items-center gap-0.5 truncate">
                   <Link2 className="size-3 shrink-0" />
                   <span className="truncate">{domain}</span>
                 </span>
               )
             )}
-          </div>
-
-          <div className="flex items-center justify-between text-muted-foreground text-xs">
-            <span>{getRelativeTime(item.createdAt, t)}</span>
-            {item.isFavorite && <Heart className="size-3 fill-red-500 text-red-500" />}
+            <span className="ml-auto shrink-0">{getRelativeTime(item.createdAt, t)}</span>
+            {item.isFavorite && <Heart className="size-3 shrink-0 fill-red-500 text-red-500" />}
           </div>
         </div>
       </Link>
