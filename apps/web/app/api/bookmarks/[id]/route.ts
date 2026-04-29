@@ -101,13 +101,11 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
   // 先删除数据库记录（持久化状态），确保 DB 失败时文件完好
   await db.delete(bookmark).where(eq(bookmark.id, id))
 
-  // 再清理关联的 Vercel Blob（失败仅留下孤儿文件，比数据丢失安全）
+  // 后台异步清理 Blob，不阻塞响应返回（Blob 挂起不应让客户端看到失败）
   if (existing.fileUrl) {
-    try {
-      await del(existing.fileUrl)
-    } catch (err) {
+    del(existing.fileUrl).catch((err) => {
       console.error("Failed to delete blob for bookmark", id, existing.fileUrl, err)
-    }
+    })
   }
 
   return NextResponse.json({ success: true })

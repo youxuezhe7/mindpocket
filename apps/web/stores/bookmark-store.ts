@@ -204,27 +204,13 @@ export const useBookmarkStore = create<BookmarkState>()(
             // 网络错误 → 回滚
           }
 
-          // 精确回滚：仅恢复失败的书签，不覆盖全量列表
+          // 回滚：清除 pending 标记后重新获取当前列表
+          // 不做精确拼接恢复——避免将书签恢复到已切换筛选条件的列表中
           set((state) => {
             const { [bookmarkId]: _removed, ...restPending } = state.pendingDeletes
-            // 如果书签已不在列表中（未被其他操作修改），追回它
-            if (existsInCurrentList && !state.bookmarks.some((item) => item.id === bookmarkId)) {
-              // 按原始顺序插回（找到被删书签在原列表中的位置）
-              const idx = currentList.findIndex((item) => item.id === bookmarkId)
-              const restored = [...state.bookmarks]
-              if (idx >= 0 && idx <= restored.length) {
-                restored.splice(idx, 0, currentList[idx])
-              } else {
-                restored.push(currentList.find((item) => item.id === bookmarkId)!)
-              }
-              return {
-                pendingDeletes: restPending,
-                bookmarks: restored,
-                pagination: { ...state.pagination, total: state.pagination.total + 1 },
-              }
-            }
-            return { pendingDeletes: restPending }
+            return { pendingDeletes: restPending, cache: {} }
           })
+          get().fetchBookmarks()
           return false
         },
 
