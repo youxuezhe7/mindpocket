@@ -166,20 +166,20 @@ function Header({
   return (
     <>
       <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b bg-background">
-        <div className="flex flex-1 items-center gap-2 px-3">
+        <div className="flex min-w-0 flex-1 items-center gap-2 px-3">
           <SidebarTrigger />
           <Separator className="mr-2 data-[orientation=vertical]:h-4" orientation="vertical" />
           <Link
-            className="flex items-center gap-1 text-muted-foreground text-sm hover:text-foreground"
+            className="flex shrink-0 items-center gap-1 text-muted-foreground text-sm hover:text-foreground"
             href="/"
           >
             <ArrowLeft className="size-4" />
             {t.bookmarkDetail.back}
           </Link>
           <Separator className="mx-2 data-[orientation=vertical]:h-4" orientation="vertical" />
-          <span className="line-clamp-1 flex-1 text-sm font-medium">{bookmark.title}</span>
+          <span className="line-clamp-1 min-w-0 flex-1 text-sm font-medium">{bookmark.title}</span>
         </div>
-        <div className="flex items-center gap-2 px-3">
+        <div className="flex shrink-0 items-center gap-2 px-3">
           {bookmark.url && (
             <Button asChild size="sm" variant="ghost">
               <a href={bookmark.url} rel="noopener noreferrer" target="_blank">
