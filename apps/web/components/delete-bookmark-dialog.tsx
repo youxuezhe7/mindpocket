@@ -53,7 +53,7 @@ export function DeleteBookmarkDialog({
       >
         <DialogHeader>
           <DialogTitle>{t.bookmark.deleteTitle}</DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="line-clamp-2 break-all">
             {formatTemplate(t.bookmark.deleteDescription, title)}
           </DialogDescription>
         </DialogHeader>
