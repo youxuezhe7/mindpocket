@@ -207,13 +207,24 @@ export const useBookmarkStore = create<BookmarkState>()(
             // 网络错误 → 回滚
           }
 
-          // 回滚：清除 pending 标记后重新获取当前列表
-          // 不做精确拼接恢复——避免将书签恢复到已切换筛选条件的列表中
+          // 回滚：清除 pending 后重新获取列表
+          // 保存快照，防止 refetch 也失败时 UI 停留在假删除状态
+          const rollbackSnapshot = { bookmarks: currentList, pagination: currentPagination }
+
           set((state) => {
             const { [bookmarkId]: _removed, ...restPending } = state.pendingDeletes
             return { pendingDeletes: restPending, cache: {} }
           })
-          get().fetchBookmarks()
+
+          try {
+            await get().fetchBookmarks()
+          } catch {
+            // refetch 失败 → 恢复删除前快照
+            set({
+              bookmarks: rollbackSnapshot.bookmarks,
+              pagination: rollbackSnapshot.pagination,
+            })
+          }
           return false
         },
 
