@@ -52,6 +52,14 @@ function getCacheKey(filters: BookmarkFilters, offset: number): string {
   return JSON.stringify({ ...filters, offset })
 }
 
+// 从书签列表中移除所有待删除的 ID，防止并发刷新将乐观删除的书签复活
+function filterPendingDeletes(
+  items: BookmarkItem[],
+  pendingDeletes: Record<string, true>
+): BookmarkItem[] {
+  return items.filter((item) => !pendingDeletes[item.id])
+}
+
 export const useBookmarkStore = create<BookmarkState>()(
   devtools(
     persist(
@@ -66,14 +74,18 @@ export const useBookmarkStore = create<BookmarkState>()(
           const cached = cache[cacheKey]
           if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
             if (append) {
+              const pending = get().pendingDeletes
               set((state) => ({
-                bookmarks: [...state.bookmarks, ...cached.data.bookmarks],
+                bookmarks: [
+                  ...state.bookmarks,
+                  ...filterPendingDeletes(cached.data.bookmarks, pending),
+                ],
                 pagination: cached.data.pagination,
                 isLoadingMore: false,
               }))
             } else {
               set({
-                bookmarks: cached.data.bookmarks,
+                bookmarks: filterPendingDeletes(cached.data.bookmarks, get().pendingDeletes),
                 pagination: cached.data.pagination,
                 isLoading: false,
               })
@@ -129,15 +141,16 @@ export const useBookmarkStore = create<BookmarkState>()(
               }
 
               if (append) {
+                const pending = get().pendingDeletes
                 set((state) => ({
-                  bookmarks: [...state.bookmarks, ...data.bookmarks],
+                  bookmarks: [...state.bookmarks, ...filterPendingDeletes(data.bookmarks, pending)],
                   pagination: newPagination,
                   isLoadingMore: false,
                   cache: newCache,
                 }))
               } else {
                 set({
-                  bookmarks: data.bookmarks,
+                  bookmarks: filterPendingDeletes(data.bookmarks, get().pendingDeletes),
                   pagination: newPagination,
                   isLoading: false,
                   cache: newCache,
@@ -179,7 +192,11 @@ export const useBookmarkStore = create<BookmarkState>()(
             if (res.ok || res.status === 404) {
               set((state) => {
                 const { [bookmarkId]: _, ...rest } = state.pendingDeletes
-                return { pendingDeletes: rest }
+                // 再次从列表中移除（防止并发刷新将其重新插入）
+                return {
+                  pendingDeletes: rest,
+                  bookmarks: state.bookmarks.filter((item) => item.id !== bookmarkId),
+                }
               })
               return true
             }
