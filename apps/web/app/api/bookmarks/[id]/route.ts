@@ -101,9 +101,15 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
   // 先删除数据库记录（持久化状态），确保 DB 失败时文件完好
   await db.delete(bookmark).where(eq(bookmark.id, id))
 
-  // 后台异步清理 Blob，不阻塞响应返回（Blob 挂起不应让客户端看到失败）
+  // 后台清理 Blob，5 秒超时，不阻塞响应
   if (existing.fileUrl) {
-    del(existing.fileUrl).catch((err) => {
+    const BLOB_CLEANUP_TIMEOUT_MS = 5000
+    Promise.race([
+      del(existing.fileUrl),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Blob deletion timed out")), BLOB_CLEANUP_TIMEOUT_MS)
+      ),
+    ]).catch((err) => {
       console.error("Failed to delete blob for bookmark", id, existing.fileUrl, err)
     })
   }

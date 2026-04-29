@@ -124,6 +124,10 @@ export const useBookmarkStore = create<BookmarkState>()(
                 total: data.total,
               }
 
+              // 缓存和状态写入前过滤待删除 ID，防止已删书签复活
+              const pending = get().pendingDeletes
+              const filteredBookmarks = filterPendingDeletes(data.bookmarks, pending)
+
               // Update cache (limit to MAX_CACHE_ENTRIES)
               const newCache = { ...get().cache }
               const cacheKeys = Object.keys(newCache)
@@ -135,22 +139,21 @@ export const useBookmarkStore = create<BookmarkState>()(
                 delete newCache[oldestKey]
               }
               newCache[cacheKey] = {
-                data: { bookmarks: data.bookmarks, pagination: newPagination },
+                data: { bookmarks: filteredBookmarks, pagination: newPagination },
                 timestamp: Date.now(),
                 ttl: CACHE_TTL,
               }
 
               if (append) {
-                const pending = get().pendingDeletes
                 set((state) => ({
-                  bookmarks: [...state.bookmarks, ...filterPendingDeletes(data.bookmarks, pending)],
+                  bookmarks: [...state.bookmarks, ...filteredBookmarks],
                   pagination: newPagination,
                   isLoadingMore: false,
                   cache: newCache,
                 }))
               } else {
                 set({
-                  bookmarks: filterPendingDeletes(data.bookmarks, get().pendingDeletes),
+                  bookmarks: filteredBookmarks,
                   pagination: newPagination,
                   isLoading: false,
                   cache: newCache,
