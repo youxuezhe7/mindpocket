@@ -105,7 +105,6 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
   if (existing.fileUrl) {
     const BLOB_CLEANUP_TIMEOUT_MS = 5000
     try {
-      // @ts-expect-error Promise.race 类型不兼容
       await Promise.race([
         del(existing.fileUrl),
         new Promise<never>((_, reject) =>
