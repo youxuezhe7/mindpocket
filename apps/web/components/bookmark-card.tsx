@@ -140,6 +140,12 @@ export function BookmarkCard({ item }: { item: BookmarkItem }) {
           "transition-all duration-200 hover:-translate-y-0.5 hover:border-border hover:shadow-lg hover:shadow-black/5"
         )}
         href={`/bookmark/${item.id}`}
+        onClick={(e) => {
+          // 下拉菜单或对话框打开时阻止卡片导航
+          if (dropdownOpen || deleteDialogOpen || moveDialogOpen) {
+            e.preventDefault()
+          }
+        }}
       >
         {/* 封面图和状态信息 */}
         <div className="relative aspect-[1.18] w-full overflow-hidden bg-muted">
@@ -223,11 +229,9 @@ export function BookmarkCard({ item }: { item: BookmarkItem }) {
                 <DropdownMenuItem
                   onSelect={(event) => {
                     event.preventDefault()
+                    setDropdownOpen(false)
                     resetError()
                     setDeleteDialogOpen(true)
-                    // 延迟关闭下拉菜单，避免 Radix portal 卸载后
-                    // 剩余 pointer/click 事件穿透到卡片 Link 导致跳转
-                    setTimeout(() => setDropdownOpen(false), 100)
                   }}
                   variant="destructive"
                 >
